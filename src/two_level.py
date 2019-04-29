@@ -2,16 +2,27 @@ import numpy as np
 
 from util import one_hot, is_unitary, mat_mul, pad
 
+from util import random_unitary
+
 
 def is_two_level(mat):
+
     """
     A two level matrix is one that acts non-trivially on a space at most of dimension two.
     """
+
+
     dim = mat.shape[0]
 
     indices = []
+    non_triv_rows = 0
     for i in range(dim):
         if not np.allclose(mat[i], one_hot(dim, i)):
+
+            non_triv_rows += 1
+            if non_triv_rows>2:
+                return False,
+
             for j in range(dim):
                 if not np.allclose(mat[i][j], 0):
                     if j not in indices:
@@ -37,68 +48,60 @@ def is_two_level(mat):
     return True, sub_mat
 
 
-
 def two_level_decomp(u):
+    """
+    Decomposes a unitary matrix into a product of two-level unitary matrices.
+    """
+
+
     if is_two_level(u)[0]:
         return [u]
 
     if not is_unitary(u):
-        print('is not unitary!')
-        return []
+        raise ValueError('Not unitary!')
 
     dim = u.shape[0]
     u_temp = u.copy().astype(np.complex)
     unitaries = []
 
-    for i in range(1, dim - 1):
-        if u_temp[i][0] == 0:
-            unitaries.append(np.eye(dim).astype(np.complex))
-        else:
-            denom = (abs(u[0][0]) ** 2 + abs(u[i][0]) ** 2) ** 0.5
+    for i in range(1, dim):
+        if u_temp[i][0] != 0:
+            denom = (abs(u_temp[0][0]) ** 2 + abs(u_temp[i][0]) ** 2) ** 0.5
             u_i = np.eye(dim).astype(np.complex)
             u_i[0][0] = np.conj(u_temp[0][0]) / denom
             u_i[0][i] = np.conj(u_temp[i][0]) / denom
             u_i[i][i] = -u_temp[0][0] / denom
             u_i[i][0] = u_temp[i][0] / denom
+
             unitaries.append(np.linalg.inv(u_i).astype(np.complex))
             u_temp = u_i @ u_temp
 
-    if u_temp[dim - 1][0] == 0:
-        u_i = np.eye(dim).astype(np.complex)
-        u_i[0][0] = np.conj(u_temp[0][0])
-        unitaries.append(u_i)
 
-    else:
+        else:
+            if i == dim-1:
+                u_i = np.eye(dim).astype(np.complex)
+                u_i[0][0] = np.conj(u_temp[0][0])
+                unitaries.append(np.linalg.inv(u_i))
+                u_temp = u_i @ u_temp
 
-        denom = (abs(u_temp[0][0]) ** 2 + abs(u_temp[dim - 1][0]) ** 2) ** 0.5
-        u_i = np.eye(dim).astype(np.complex)
-        u_i[0][0] = np.conj(u_temp[0][0]) / denom
-        u_i[0][dim - 1] = np.conj(u_temp[dim - 1][0].astype(np.complex)) / denom
-        u_i[dim - 1][dim - 1] = -u_temp[0][0] / denom
-        u_i[dim - 1][0] = u_temp[dim - 1][0] / denom
-        unitaries.append(np.linalg.inv(u_i).astype(np.complex))
-        u_temp = u_i @ u_temp
 
-    u_i = np.conj(u_temp.copy()).transpose()
-    #     for j in range(1,dim-1):
-    #         u_i[0][j] = 0
-    #         u_i[j][0] = 0
-    print(u_i)
+    for un in two_level_decomp(u_temp[1:, 1:]):
+        unitaries.append(pad(un))
 
-    print(is_unitary(u_i))
-    print(is_unitary(u_i[1:, 1:]))
+    # for un in unitaries:
+    #     if not is_unitary(un):
+    #         print('not unitary')
+    #     if not is_two_level(un)[0]:
+    #         print('not two_level')
 
-    for un in two_level_decomp(u_i[1:, 1:]):
-        unitaries.append(np.linalg.inv(pad(un)))
 
-    # check
-    for m in unitaries:
-        print('--------------------------')
-        # print(m)
-        print(is_unitary(m))
-        print(is_two_level(m)[0])
+    #print('all close: ' + str(np.allclose(mat_mul(unitaries), u)))
 
-    print(np.allclose(mat_mul(unitaries), u))
 
     return unitaries
 
+
+if __name__ == '__main__':
+
+    u = random_unitary(6)
+    uns = two_level_decomp(u)

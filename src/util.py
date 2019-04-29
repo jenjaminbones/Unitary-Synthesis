@@ -36,6 +36,6 @@ def mat_mul(mat_list):
     return res
 
 def pad(mat):
-    res = np.eye(mat.shape[0]+1)
-    res[1:,1:] = mat
+    res = np.eye(mat.shape[0]+1).astype(np.complex)
+    res[1:,1:] = mat.astype(np.complex)
     return res
