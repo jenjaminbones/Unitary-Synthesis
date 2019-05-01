@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.linalg import expm
+import math
 
 
 def one_hot(length, index):
@@ -27,7 +28,9 @@ def random_hermitian(dim, spread=1):
     return h
 
 def random_unitary(dim, spread=1):
-    return expm(1j*random_hermitian(dim,spread=spread))
+    u = expm(1j*random_hermitian(dim,spread=spread))
+    assert(is_unitary(u))
+    return u
 
 def mat_mul(mat_list):
     res = np.eye(mat_list[0].shape[0])
@@ -39,3 +42,18 @@ def pad(mat):
     res = np.eye(mat.shape[0]+1).astype(np.complex)
     res[1:,1:] = mat.astype(np.complex)
     return res
+
+def basic_partial_trace(mat):
+    dim = mat.shape[0]
+    n = math.log(dim, 2)
+    assert(int(n) == n)
+    n = int(n)
+
+    a = np.zeros((2, 2)).astype(np.complex)
+
+    a[0][0] = np.matrix.trace(mat[:int(dim/2), :int(dim/2)])
+    a[0][1] = np.matrix.trace(mat[:int(dim / 2), int(dim / 2):])
+    a[1][0] = np.matrix.trace(mat[int(dim / 2):, :int(dim / 2)])
+    a[1][1] = np.matrix.trace(mat[int(dim / 2):, int(dim / 2):])
+
+    return a

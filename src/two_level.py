@@ -11,7 +11,6 @@ def is_two_level(mat):
     A two level matrix is one that acts non-trivially on a space at most of dimension two.
     """
 
-
     dim = mat.shape[0]
 
     indices = []
