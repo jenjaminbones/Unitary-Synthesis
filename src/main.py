@@ -4,17 +4,21 @@ from util import *
 
 if __name__ == '__main__':
 
+    np.random.seed(123)
+
     U = random_unitary(8)
     print(find_if_separable(U))
 
-    b = basic_partial_trace(U)
+    a,b, err = nearest_kron_product(U, 4, 2, 4, 2)
 
-    B = np.kron(np.linalg.inv(b), np.eye(4).astype(np.complex))
+    U_1 = np.kron(a, np.eye(2))
+    U_2 = np.kron(np.linalg.inv(a), np.eye(2))
 
-    print(nearest_kron_product(B,2,4,2,4)[2])
+    x = prop_submat(U)
+    U_3 = np.kron(np.eye(2), x)
+    U_4 = np.kron(np.eye(2), np.linalg.inv(x))
 
-    print(find_if_separable(B))
-
-    U = U @ B
-
-    print(find_if_separable(U))
+    print(find_if_separable(U @ U_1))
+    print(find_if_separable(U @ U_2))
+    print(find_if_separable(U @ U_3))
+    print(find_if_separable(U @ U_4))

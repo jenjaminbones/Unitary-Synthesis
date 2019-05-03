@@ -34,6 +34,46 @@ class TestVec(TestCase):
 
                 self.assertTrue(np.allclose(inverse_vec(vec(X), shape=(shape,shape)),X ))
 
+
+class TestNearestKroneckerProduct(TestCase):
+
+
+    def testIdentityKP(self):
+
+        x = np.eye(3)
+        y = np.eye(2)
+        prod = np.kron(x,y)
+
+        c, d, err = nearest_kron_product(prod, 3, 2, 3, 2)
+        self.assertTrue(np.allclose(err, 0))
+
+        x = 1j*np.eye(3)
+        y = np.eye(4)
+        prod = np.kron(x, y)
+
+        c, d, err = nearest_kron_product(prod, 3, 4, 3, 4)
+        self.assertTrue(np.allclose(err, 0))
+
+        x = 1j*np.eye(3)
+        y = (1.2j-5)*np.eye(4)
+        prod = np.kron(x, y)
+
+        c, d, err = nearest_kron_product(prod, 3, 4, 3, 4)
+        self.assertTrue(np.allclose(err, 0))
+
+
+    def testRandomUnitaryKP(self):
+
+        x = random_unitary(2)
+        y = random_unitary(2)
+        prod = np.kron(x,y)
+
+        c, d, err = nearest_kron_product(prod, 2, 2, 2, 2)
+        self.assertTrue(np.allclose(err, 0))
+
+
+
+
 class TestFindIfSeparable(TestCase):
 
     def testFindIfSeparable(self):
@@ -65,7 +105,7 @@ class TestFindIfSeparable(TestCase):
 
         ###
 
-        a = np.random.uniform(-1, 1, (16, 16))
+        a = random_unitary(16)
 
         B = np.random.uniform(-1, 1, (4, 4))
 
