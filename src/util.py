@@ -52,3 +52,11 @@ def prop_submat(mat):
     a = mat[:int(dim/2),:int(dim/2)]
 
     return a
+
+
+def int_to_binlist(i, n):
+    return list(map(int,format(i,'0' + str(n) + 'b')))
+
+
+def binlist_to_int(l):
+    return int("".join(map(str,l)),2)
