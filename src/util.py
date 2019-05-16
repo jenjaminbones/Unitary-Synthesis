@@ -55,8 +55,39 @@ def prop_submat(mat):
 
 
 def int_to_binlist(i, n):
-    return list(map(int,format(i,'0' + str(n) + 'b')))
+    return list(map(int,format(i, '0' + str(n) + 'b')))
 
 
 def binlist_to_int(l):
     return int("".join(map(str,l)),2)
+
+
+def gray_code(blist_1, blist_2):
+
+    b1_len = len(blist_1)
+    b2_len = len(blist_2)
+
+    assert(b1_len==b2_len)
+
+    disagreements = add_bin_lists(blist_1, blist_2)
+
+    steps = [blist_1]
+
+    for i in range(b1_len):
+        if disagreements[i]==1:
+            steps.append(add_bin_lists(steps[-1], one_hot(b1_len,i)))
+
+    return steps
+
+
+
+def add_bin_lists(b1, b2):
+    return [sum(x)%2 for x in zip(b1, b2)]
+
+
+if __name__ == '__main__':
+    b1= [1,0,1]
+
+    b2= [1,1,0]
+
+    print(gray_code(b1, b2))

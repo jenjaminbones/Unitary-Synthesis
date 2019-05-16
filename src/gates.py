@@ -2,6 +2,7 @@ import numpy as np
 from util import binlist_to_int, int_to_binlist
 from controlled_ops import CNOT
 
+X = np.array([[0,1],[1,0]])
 
 class Gate():
     def __init__(self, num_qubits, indices):
@@ -15,6 +16,7 @@ class Gate():
             return self.tot_mat
         else:
             return self.tot_mat
+
 
 
 
