@@ -13,9 +13,12 @@ def two_level_to_fully_controlled(mat):
     assert(n == int(n))
     n = int(n)
 
-    b_val, u, inds = is_two_level(mat)
+    bool_val, u, inds = is_two_level(mat)
+    if not bool_val:
+        print(mat)
+    assert(bool_val)
     inds.sort()
-    assert(b_val)
+
 
     b1 = int_to_binlist(inds[0], n)
     b2 = int_to_binlist(inds[1], n)
@@ -47,7 +50,7 @@ def two_level_to_fully_controlled(mat):
     # print(is_two_level(mat))
     # print(is_two_level(mat_mul(gates)))
 
-    print(np.allclose(mat,mat_mul(gates)))
+    #print(np.allclose(mat,mat_mul(gates)))
 
     return gates
 
@@ -75,7 +78,30 @@ def fully_controlled_U(u, n, index, ctrl_bstring):
 
 def is_fully_controlled_op(mat):
     dim = mat.shape[0]
+    n = math.log(dim, 2)
+    assert(n == int(n))
+    n = int(n)
 
+    b, sub_mat, indices = is_two_level(mat)
+    if not b:
+        return False,
+
+    assert(len(indices)==2)
+
+    ind_1 = int_to_binlist(indices[0], n)
+    ind_2 = int_to_binlist(indices[1], n)
+
+
+
+    if hamming_dist(ind_1, ind_2) != 1:
+        return False,
+    else:
+
+        index = int(np.nonzero(add_bin_lists(ind_1,ind_2))[0])
+        ctrl_bstring = ind_1[:]
+        ctrl_bstring[index] = -1 # target
+
+        return True, sub_mat, indices, ctrl_bstring
 
 
 
@@ -86,18 +112,15 @@ def CNOT(flip=False):
 
 if __name__ == '__main__':
 
-    u = np.array([[5,6],[7,8]])
+    np.random.seed(123)
 
     u= random_unitary(2)
 
-    for _ in range(10):
+    U = make_two_level(u, 3, 1, 6)
 
-        for n in range(3,6):
-            x = np.random.randint(0,2**n -1)
-            y = np.random.randint(0, 2 ** n - 1)
-            while y==x:
-                y = np.random.randint(0, 2 ** n - 1)
+    gates = two_level_to_fully_controlled(U)
 
-            U = make_two_level(u, n, x,y)
+    for g in gates:
+        print(is_fully_controlled_op(g))
 
-            two_level_to_fully_controlled(U)
+

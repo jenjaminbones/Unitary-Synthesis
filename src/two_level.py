@@ -6,12 +6,14 @@ from util import random_unitary
 
 def make_two_level(u,n,ind1, ind2):
 
+    assert(u.shape == (2,2))
+
     ind_1 = min(ind1, ind2)
     ind_2 = max(ind1, ind2)
 
 
     res = np.eye(2**n, dtype=np.complex)
-    assert(u.shape == (2,2))
+
 
     res[ind_1][ind_1] = u[0][0]
     res[ind_1][ind_2] = u[0][1]
@@ -31,19 +33,24 @@ def is_two_level(mat):
 
     indices = []
     non_triv_rows = 0
-    for i in range(dim):
-        if not np.allclose(mat[i], one_hot(dim, i)):
+    for row in range(dim):
+        if not np.allclose(mat[row], one_hot(dim, row)):
+
+            if row not in indices:
+                indices.append(row)
 
             non_triv_rows += 1
             if non_triv_rows>2:
-                return False,
+                #print('>2 non triv rows')
+                return False, None, None
 
-            for j in range(dim):
-                if not np.allclose(mat[i][j], 0):
-                    if j not in indices:
-                        indices.append(j)
-            if i not in indices or len(indices) > 2:
-                return False,
+            for col in range(dim):
+                if not np.allclose(mat[row][col], 1 if row == col else 0):
+                    if col not in indices:
+                        indices.append(col)
+            if len(indices) > 2:
+                #print('len(indices)>2')
+                return False, None, None
 
     sub_removed = mat.copy()
 
@@ -51,13 +58,14 @@ def is_two_level(mat):
         sub_mat = []
     else:
         for ax in [0, 1]:
-            for j in range(len(indices)):
-                sub_removed = np.delete(sub_removed, indices[j] - j, axis=ax)
+            for col in range(len(indices)):
+                sub_removed = np.delete(sub_removed, indices[col] - col, axis=ax)
         sub_mat = np.array([[mat[indices[0], indices[0]], mat[indices[0], indices[1]]],
                             [mat[indices[1], indices[0]], mat[indices[1], indices[1]]]])
 
     if not np.allclose(sub_removed, np.eye(dim - len(indices))):
-        return False,
+        #print('not identity when submat removed')
+        return False,None,None
 
     return True, sub_mat, indices
 

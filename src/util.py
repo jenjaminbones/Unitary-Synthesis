@@ -79,6 +79,9 @@ def gray_code(blist_1, blist_2):
 
     return steps
 
+def hamming_dist(b1,b2):
+    return len(np.nonzero(add_bin_lists(b1,b2))[0])
+
 
 
 def add_bin_lists(b1, b2):
@@ -86,8 +89,9 @@ def add_bin_lists(b1, b2):
 
 
 if __name__ == '__main__':
-    b1= [1,0,1]
+    b1= [0,0,0]
 
-    b2= [1,1,0]
+    b2= [0,0,0]
 
     print(gray_code(b1, b2))
+    print(hamming_dist(b1,b2))
