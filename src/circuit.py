@@ -13,7 +13,7 @@ class Circuit():
         self.gate_list += new_gates
 
     def evaluate(self):
-        res = np.eye(self.num_qubits)
+        res = np.eye(2**self.num_qubits)
         for gate in self.gate_list:
-            res = res @ gate.matrix()
+            res = res @ gate.total_matrix()
         return res

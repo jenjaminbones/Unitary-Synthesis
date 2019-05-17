@@ -10,7 +10,7 @@ def one_hot(length, index):
 def is_unitary(mat):
     if np.linalg.det(mat)==0:
         return False
-    return np.allclose(np.linalg.inv(mat),np.conj(mat).transpose())
+    return np.allclose(np.linalg.inv(mat), np.conj(mat).transpose())
 
 
 def random_hermitian(dim, spread=1):

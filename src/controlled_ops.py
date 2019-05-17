@@ -52,6 +52,8 @@ def two_level_to_fully_controlled(mat):
 
     #print(np.allclose(mat,mat_mul(gates)))
 
+    assert(np.allclose(mat_mul(gates),mat))
+
     return gates
 
 
@@ -90,8 +92,6 @@ def is_fully_controlled_op(mat):
 
     ind_1 = int_to_binlist(indices[0], n)
     ind_2 = int_to_binlist(indices[1], n)
-
-
 
     if hamming_dist(ind_1, ind_2) != 1:
         return False,

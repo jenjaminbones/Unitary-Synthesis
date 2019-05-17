@@ -116,7 +116,11 @@ def two_level_decomp(u):
     #         print('not two_level')
     #
     #
-    # print('all close: ' + str(np.allclose(mat_mul(unitaries), u)))
+
+
+    assert(np.allclose(mat_mul(unitaries), u))
+
+
 
 
     return unitaries
