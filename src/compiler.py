@@ -1,6 +1,6 @@
 from two_level import *
-from controlled_ops import *
-from controlled_to_cnot import *
+from fully_controlled import *
+from single_cnot import *
 from util import *
 
 import numpy as np
@@ -11,7 +11,7 @@ def compile_unitary(U):
     """
     two_level_unitaries = two_level_decomp(U)
 
-    assert(np.allclose(mat_mul(two_level_unitaries),U))
+    assert(np.allclose(mat_mul(two_level_unitaries), U))
 
     controlled_ops = []
 
@@ -23,9 +23,6 @@ def compile_unitary(U):
     gates = []
 
     for c in controlled_ops:
-        circuit = Circuit(n)
-        circuit.add_gates(fully_controlled_to_single_cnot(c))
-        assert (np.allclose(c, circuit.evaluate()))
         gates += fully_controlled_to_single_cnot(c)
 
     circ = Circuit(n)
@@ -34,19 +31,31 @@ def compile_unitary(U):
 
     prod = circ.evaluate()
 
-    assert(np.allclose(prod,U))
+    assert(np.allclose(prod, U))
 
     print('number of two-level: ' + str(len(two_level_unitaries)))
     print('number of fully controlled ops: ' + str(len(controlled_ops)))
     print('number of CNOT and single qubit gates: ' + str(len(gates)))
+    s = [g for g in gates if type(g) is SingleQubitGate]
+    c = [g for g in gates if type(g) is CNOTGate]
+
+    print('Single gates: ' + str(len(s)))
+    print('CNOT gates: ' + str(len(c)))
 
     print('approximation error: ' + str(np.linalg.norm(prod-U)))
 
+    for g in gates:
+        if np.allclose(g.total_matrix(), np.eye(2**g.num_qubits)):
+            print('redundant gate')
+
+    return circ
+
 if __name__ == '__main__':
 
-    np.random.seed(634)
+    np.random.seed(123)
 
-    for n in [2, 3]:
+    n=3
+    for _ in range(5):
         print('-------------------------')
         print('number of qubits: ' + str(n))
 

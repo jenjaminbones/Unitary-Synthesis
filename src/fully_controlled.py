@@ -7,11 +7,13 @@ X = np.array([[0,1],[1,0]])
 
 
 def two_level_to_fully_controlled(mat):
-    dim = mat.shape[0]
 
-    n = math.log(dim, 2)
-    assert(n == int(n))
-    n = int(n)
+    b, sub_mat, indices, ctrl_bstring = is_fully_controlled_op(mat)
+
+    if b:
+        return [mat]
+
+    dim, n = get_dim_qubits(mat)
 
     bool_val, u, inds = is_two_level(mat)
     if not bool_val:
@@ -86,7 +88,7 @@ def is_fully_controlled_op(mat):
 
     b, sub_mat, indices = is_two_level(mat)
     if not b:
-        return False,
+        return False, None, None, None
 
     assert(len(indices)==2)
 
@@ -94,7 +96,7 @@ def is_fully_controlled_op(mat):
     ind_2 = int_to_binlist(indices[1], n)
 
     if hamming_dist(ind_1, ind_2) != 1:
-        return False,
+        return False, None, None, None
     else:
 
         index = int(np.nonzero(add_bin_lists(ind_1,ind_2))[0])

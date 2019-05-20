@@ -3,10 +3,6 @@ from scipy.linalg import expm
 import math
 
 
-def one_hot(length, index):
-    return [1 if i == index else 0 for i in range(length)]
-
-
 def is_unitary(mat):
     if np.linalg.det(mat)==0:
         return False
@@ -27,10 +23,12 @@ def random_hermitian(dim, spread=1):
 
     return h
 
+
 def random_unitary(dim, spread=1):
     u = expm(1j*random_hermitian(dim,spread=spread))
     assert(is_unitary(u))
     return u
+
 
 def mat_mul(mat_list):
     res = np.eye(mat_list[0].shape[0])
@@ -38,20 +36,35 @@ def mat_mul(mat_list):
         res = res @ m
     return res
 
+
 def pad(mat):
     res = np.eye(mat.shape[0]+1).astype(np.complex)
     res[1:,1:] = mat.astype(np.complex)
     return res
 
 
-def prop_submat(mat):
+def get_dim_qubits(mat, qubits=True):
     dim = mat.shape[0]
-    n = math.log(dim, 2)
-    assert(int(n) == n)
+    if qubits:
+        num_qubits = math.log(dim, 2)
+        assert(num_qubits == int(num_qubits))
+        n = int(num_qubits)
+        return dim, n
+    else:
+        return dim,
 
-    a = mat[:int(dim/2),:int(dim/2)]
 
-    return a
+# def prop_submat(mat):
+#     dim = mat.shape[0]
+#     n = math.log(dim, 2)
+#     assert(int(n) == n)
+#
+#     a = mat[:int(dim/2),:int(dim/2)]
+#
+#     return a
+
+def one_hot(length, index):
+    return [1 if i == index else 0 for i in range(length)]
 
 
 def int_to_binlist(i, n):
@@ -79,19 +92,10 @@ def gray_code(blist_1, blist_2):
 
     return steps
 
+
 def hamming_dist(b1,b2):
     return len(np.nonzero(add_bin_lists(b1,b2))[0])
 
 
-
 def add_bin_lists(b1, b2):
     return [sum(x)%2 for x in zip(b1, b2)]
-
-
-if __name__ == '__main__':
-    b1= [0,0,0]
-
-    b2= [0,0,0]
-
-    print(gray_code(b1, b2))
-    print(hamming_dist(b1,b2))

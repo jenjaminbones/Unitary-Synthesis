@@ -54,3 +54,19 @@ class TestControlledUGate(TestCase):
     def testTotalMatrix(self):
 
         self.assertTrue(np.allclose(self.g1.total_matrix(), np.kron(np.eye(2 ** (self.n - 2)), fully_controlled_U(self.v, 2, 2, [1]))))
+
+class TestMiscFunctions(TestCase):
+
+    def testExtend(self):
+
+        u = np.array([[5,6],[7,8]])
+        g = SingleQubitGate(3,1,u)
+
+        e = extend(g,4,[1,2,3])
+
+        self.assertTrue(e.num_qubits==4)
+        self.assertTrue(type(e)==SingleQubitGate)
+
+        exp = np.kron(u, np.kron(np.kron(np.eye(2), np.eye(2)), np.eye(2)))
+
+        self.assertTrue(np.allclose(exp, e.total_matrix()))

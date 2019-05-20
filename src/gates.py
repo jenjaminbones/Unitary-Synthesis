@@ -1,9 +1,11 @@
 import numpy as np
 from util import *
-from controlled_ops import *
+import fully_controlled
 import cmath
 
-X = np.array([[0,1],[1,0]])
+X = np.array([[0, 1],
+              [1, 0]])
+
 
 def z_rotation(ang):
     return np.array([[math.e**(1j*ang/2), 0],
@@ -54,6 +56,25 @@ def gate_decomposition(u_):
     return (delta, alpha, theta, beta)
 
 
+def extend(gate, num_qubits, indices):
+
+    t = type(gate)
+    assert(gate.num_qubits == len(indices))
+
+    if t is SingleQubitGate:
+        return t(num_qubits, indices[gate.q_indices[0]], gate.nontriv_matrix)
+
+    elif t is ControlledUGate:
+        return t(num_qubits,indices[gate.q_indices[0]], indices[gate.q_indices[1]], gate.nontriv_matrix)
+
+    elif t is CNOTGate:
+        return t(num_qubits,indices[gate.q_indices[0]], indices[gate.q_indices[1]])
+    else:
+        return MultiQubitGate(num_qubits,indices,gate.nontriv_matrix)
+
+
+
+
 class MultiQubitGate():
     def __init__(self, num_qubits, qubit_indices, matrix):
 
@@ -96,7 +117,8 @@ class ControlledUGate(MultiQubitGate):
         assert(num_qubits >= max(control, target))
         assert(control!=target)
 
-        mat = fully_controlled_U(matrix,2,2,[1])
+
+        mat = fully_controlled.fully_controlled_U(matrix,2,2,[1])
 
         super(ControlledUGate, self).__init__(num_qubits,[control, target], mat)
 
@@ -104,9 +126,3 @@ class CNOTGate(ControlledUGate):
 
     def __init__(self, num_qubits, control, target):
         super().__init__(num_qubits,control, target,X)
-
-
-
-
-if __name__ == '__main__':
-    pass

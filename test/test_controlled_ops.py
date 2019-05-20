@@ -1,7 +1,31 @@
 from unittest import TestCase
-from gates import *
+from controlled_ops import is_fully_controlled_op, fully_controlled_U
+from gates import X
 
 import numpy as np
+
+class TestFullyControlledU(TestCase):
+
+    def testFullyControlledU(self):
+
+        u = np.array([[5,6],[-7j,8]])
+
+        n = 3
+        g_index = 3
+        ctrl_bstring = [1,1,-1]
+
+        res = fully_controlled_U(u,n,g_index,ctrl_bstring)
+        exp = np.array([[1, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 1, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 1, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 1, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 1, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 1, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 5, 6],
+                        [0, 0, 0, 0, 0, 0, -7j, 8]
+                        ])
+
+        self.assertTrue(np.allclose(res,exp))
 
 class TestIsFullyControlledOp(TestCase):
 
