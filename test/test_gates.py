@@ -1,12 +1,41 @@
 from unittest import TestCase
 from gates import *
 
+from fully_controlled import fully_controlled_U
+
 import numpy as np
+import math
+
+class TestRotations(TestCase):
+
+    def testZRotation(self):
+        ang = math.pi
+
+        z = np.array([[1j, 0],
+                      [0, -1j]])
+
+        self.assertTrue(np.allclose(z, z_rotation(ang)))
+
+    def testYRotation(self):
+        ang = math.pi
+
+        y = np.array([[0, 1],
+                      [-1, -0]])
+
+        self.assertTrue(np.allclose(y, y_rotation(ang)))
+
+    def testPhase(self):
+        ang = math.pi
+
+        p = np.array([[-1, 0],
+                      [0, -1]])
+
+        self.assertTrue(np.allclose(p, phase(ang)))
 
 
 class TestMultiQubitGate(TestCase):
 
-    m1 =np.eye(2**3)
+    m1 = np.eye(2**3)
     g1 = MultiQubitGate(5, [1, 2, 4], matrix=m1)
 
     m2 = np.array([[1,2],[3j,-7.]])

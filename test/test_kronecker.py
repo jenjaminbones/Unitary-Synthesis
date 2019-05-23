@@ -44,21 +44,21 @@ class TestNearestKroneckerProduct(TestCase):
         y = np.eye(2)
         prod = np.kron(x,y)
 
-        c, d, err = nearest_kron_product(prod, 3, 2, 3, 2)
+        c, d, err = nearest_kron_product(prod, 3, 3, 2, 2)
         self.assertTrue(np.allclose(err, 0))
 
         x = 1j*np.eye(3)
         y = np.eye(4)
         prod = np.kron(x, y)
 
-        c, d, err = nearest_kron_product(prod, 3, 4, 3, 4)
+        c, d, err = nearest_kron_product(prod, 3, 3, 4, 4)
         self.assertTrue(np.allclose(err, 0))
 
         x = 1j*np.eye(3)
         y = (1.2j-5)*np.eye(4)
         prod = np.kron(x, y)
 
-        c, d, err = nearest_kron_product(prod, 3, 4, 3, 4)
+        c, d, err = nearest_kron_product(prod, 3, 3, 4, 4)
         self.assertTrue(np.allclose(err, 0))
 
 
@@ -84,7 +84,7 @@ class TestFindIfSeparable(TestCase):
 
         k1 = np.kron(a, B)
 
-        b, i, x, y = find_if_separable(k1)
+        b, i, x, y, e = find_min_separable(k1)
         self.assertTrue(b)
 
         k1_ = np.kron(x,y)
@@ -94,7 +94,7 @@ class TestFindIfSeparable(TestCase):
 
         k2 = np.kron(B,a)
 
-        b, i, x, y = find_if_separable(k2)
+        b, i, x, y, e = find_min_separable(k2)
 
         self.assertTrue(b)
 
@@ -111,7 +111,7 @@ class TestFindIfSeparable(TestCase):
 
         k1 = np.kron(a, B)
 
-        b, i, x, y = find_if_separable(k1)
+        b, i, x, y, e = find_min_separable(k1)
         self.assertTrue(b)
 
         k1_ = np.kron(x, y)
@@ -121,7 +121,7 @@ class TestFindIfSeparable(TestCase):
 
         k2 = np.kron(B, a)
 
-        b, i, x, y = find_if_separable(k2)
+        b, i, x, y, e = find_min_separable(k2)
         self.assertTrue(b)
 
         k2_ = np.kron(x, y)

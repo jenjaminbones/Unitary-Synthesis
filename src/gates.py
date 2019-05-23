@@ -21,6 +21,7 @@ def phase(ang):
     return np.array([[math.e**(1j*ang), 0],
                      [0, math.e**(1j*ang)]], dtype=np.complex)
 
+
 def gate_decomposition(u_):
     assert (u_.shape == (2, 2))
     assert(is_unitary(u_))
@@ -125,4 +126,5 @@ class ControlledUGate(MultiQubitGate):
 class CNOTGate(ControlledUGate):
 
     def __init__(self, num_qubits, control, target):
-        super().__init__(num_qubits,control, target,X)
+        super(CNOTGate, self).__init__(num_qubits,control, target,X)
+

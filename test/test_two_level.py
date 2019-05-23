@@ -53,6 +53,12 @@ class TestIsTwoLevel(TestCase):
 
     def testPositiveCases(self):
 
+        x0 = np.array([[4,0,0],
+                       [0,1,0],
+                       [0,0,1]])
+
+        self.assertTrue(is_two_level(x0)[0])
+
         x1 = np.array([[1,0,0],
                        [0,1,2],
                        [0,3,4]])

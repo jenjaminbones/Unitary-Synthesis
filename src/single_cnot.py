@@ -15,6 +15,11 @@ def controlledU_to_single_cnot(mat):
     assert(bool_val)
     assert(is_unitary(submat))
 
+    CX = CNOTGate(2, 1, 2)
+    if np.allclose(mat, CX.total_matrix()):
+        return [CX]
+
+
     delta,alpha,theta,beta = gate_decomposition(submat)
 
     E = z_rotation(-delta) @ phase(delta/2)
@@ -52,12 +57,8 @@ def controlledU_to_single_cnot(mat):
             gates.append(SingleQubitGate(2,2,X))
 
     c = Circuit(2)
-
     c.add_gates(gates)
-
-
     assert(np.allclose(c.evaluate(),mat))
-
 
     return gates
 
@@ -79,9 +80,7 @@ def fully_controlled_to_single_cnot(mat):
         if ctrl_bstring[i] == 0:
             prelim_gates.append(SingleQubitGate(n, i+1, X))
 
-    if len(prelim_gates) !=0:
-        print(prelim_gates)
-        
+
     if n == 2:
         gates = controlledU_to_single_cnot(mat)
         return gates
@@ -99,7 +98,6 @@ def fully_controlled_to_single_cnot(mat):
 
         g2 = fully_controlled_to_single_cnot(fully_controlled_U(X, n-1, 1 if matrix_index==1 else targ_index, [1]*(n-2)))
 
-        #g2_gates = [MultiQubitGate(n, [x for x in range(1,n+1) if x != matrix_index], g.total_matrix()) for g in g2]
         g2_gates = [extend(g, n, [x for x in range(1,n+1) if x != matrix_index]) for g in g2]
 
         g3 = controlledU_to_single_cnot(ControlledUGate(2, 1, 2, np.linalg.inv(v)).total_matrix())

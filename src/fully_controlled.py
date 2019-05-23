@@ -16,8 +16,6 @@ def two_level_to_fully_controlled(mat):
     dim, n = get_dim_qubits(mat)
 
     bool_val, u, inds = is_two_level(mat)
-    if not bool_val:
-        print(mat)
     assert(bool_val)
     inds.sort()
 
@@ -49,10 +47,6 @@ def two_level_to_fully_controlled(mat):
     if len(gates_rev)!=0:
         gates += gates_rev
 
-    # print(is_two_level(mat))
-    # print(is_two_level(mat_mul(gates)))
-
-    #print(np.allclose(mat,mat_mul(gates)))
 
     assert(np.allclose(mat_mul(gates),mat))
 
@@ -65,7 +59,6 @@ def fully_controlled_U(u, n, index, ctrl_bstring):
     assert(index<n+1)
 
     ctrl_bstring = list(ctrl_bstring)
-    assert(len(ctrl_bstring) == n-1)
 
     ind_1 = ctrl_bstring[:]
     ind_2 = ctrl_bstring[:]

@@ -17,3 +17,6 @@ class Circuit():
         for gate in self.gate_list:
             res = res @ gate.total_matrix()
         return res
+
+    def simplify(self):
+        pass

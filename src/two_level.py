@@ -63,26 +63,34 @@ def is_two_level(mat):
 
     if len(indices) == 0:  # mat must equal identity
         sub_mat = np.eye(2)
+        sub_removed = np.eye(dim-2)
         indices = [0, 1]  # any will do
 
-    elif len(indices) == 1:  # mat is identity except for one diagonal entry
+    else:
+        if len(indices) == 1:  # mat is identity except for one diagonal entry
 
-        if indices[0] != dim:
-            # if non-trivial index is not the last one, pick submat and indices to be
-            submat = np.array([[indices[0], 0], [0, 1]])
-            indices.append(indices[0]+1)
-        else:  # non-trivial index is the last one
-            submat = np.array([[1, 0], [0, indices[0]]])
+            if indices[0] != dim:
+                # if non-trivial index is not the last one, pick submat and indices to be
+                submat = np.array([[indices[0], 0], [0, 1]])
+                indices.append(indices[0]+1)
 
-    else:  # 2 non-trivial indices
+
+            else:  # non-trivial index is the last one
+                submat = np.array([[1, 0], [0, indices[0]]])
+                indices.append(indices[0]-1)
+
+
+        # 2 non-trivial indices
         for ax in [0, 1]:
             for col in range(len(indices)):
                 sub_removed = np.delete(sub_removed, indices[col] - col, axis=ax)  # remove submat
         sub_mat = np.array([[mat[indices[0], indices[0]], mat[indices[0], indices[1]]],
                             [mat[indices[1], indices[0]], mat[indices[1], indices[1]]]])
 
+
     # final check: should be identity when submat removed
     if not np.allclose(sub_removed, np.eye(dim - len(indices))):
+
         return False, None, None
 
     return True, sub_mat, indices

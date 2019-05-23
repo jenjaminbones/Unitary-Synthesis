@@ -1,5 +1,5 @@
 from unittest import TestCase
-from controlled_ops import is_fully_controlled_op, fully_controlled_U
+from fully_controlled import is_fully_controlled_op, fully_controlled_U
 from gates import X
 
 import numpy as np
@@ -12,7 +12,7 @@ class TestFullyControlledU(TestCase):
 
         n = 3
         g_index = 3
-        ctrl_bstring = [1,1,-1]
+        ctrl_bstring = [1,1]
 
         res = fully_controlled_U(u,n,g_index,ctrl_bstring)
         exp = np.array([[1, 0, 0, 0, 0, 0, 0, 0],
