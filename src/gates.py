@@ -1,4 +1,3 @@
-import numpy as np
 from util import *
 import fully_controlled
 import cmath
@@ -23,6 +22,11 @@ def phase(ang):
 
 
 def gate_decomposition(u_):
+    """
+    Decomposes a 2 x 2 unitary u into u = p * z1 * y * z2 where p is a phase gate, y is a y rotation and z1 and z2 are
+    z rotations.
+    Returns the relevant angles as a tuple.
+    """
     assert (u_.shape == (2, 2))
     assert(is_unitary(u_))
 
@@ -41,7 +45,8 @@ def gate_decomposition(u_):
         alpha = 2 / 1j * cmath.log(u[0][0])
         beta = 0
     else:
-        theta = 2 * math.acos((u[0][0] * u[1][1]) ** 0.5)
+        arg = float((u[0][0] * u[1][1]) ** 0.5)
+        theta = 2 * math.acos(arg)
         a_p_b = 2 / 1j * cmath.log(u[0][0] / math.cos(theta / 2))
         a_m_b = 2 / 1j * cmath.log(u[0][1] / math.sin(theta / 2))
 
@@ -54,10 +59,14 @@ def gate_decomposition(u_):
 
     assert(np.allclose(p @ z1 @ y @ z2, u_ ))
 
-    return (delta, alpha, theta, beta)
+    return delta, alpha, theta, beta
 
 
 def extend(gate, num_qubits, indices):
+    """
+    Extends a gate acting on a smaller number of qubits to act on more qubits. 'indices' refers to the new qubit indices
+    on which the new gate acts.
+    """
 
     t = type(gate)
     assert(gate.num_qubits == len(indices))
@@ -72,8 +81,6 @@ def extend(gate, num_qubits, indices):
         return t(num_qubits,indices[gate.q_indices[0]], indices[gate.q_indices[1]])
     else:
         return MultiQubitGate(num_qubits,indices,gate.nontriv_matrix)
-
-
 
 
 class MultiQubitGate():
@@ -106,11 +113,13 @@ class MultiQubitGate():
 
         return U
 
+
 class SingleQubitGate(MultiQubitGate):
 
     def __init__(self, num_qubits, qubit_index, matrix):
         assert(matrix.shape == (2,2))
         super(SingleQubitGate,self).__init__(num_qubits, [qubit_index], matrix)
+
 
 class ControlledUGate(MultiQubitGate):
 
@@ -122,6 +131,7 @@ class ControlledUGate(MultiQubitGate):
         mat = fully_controlled.fully_controlled_U(matrix,2,2,[1])
 
         super(ControlledUGate, self).__init__(num_qubits,[control, target], mat)
+
 
 class CNOTGate(ControlledUGate):
 

@@ -1,8 +1,7 @@
+from util import *
+
 import numpy as np
 
-from util import one_hot, is_unitary, mat_mul, pad
-
-from util import *
 
 
 def make_two_level(u, n, ind1, ind2):

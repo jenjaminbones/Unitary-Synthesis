@@ -1,7 +1,9 @@
-from two_level import *
-from fully_controlled import *
-from single_cnot import *
 from util import *
+from two_level import two_level_decomp
+from fully_controlled import two_level_to_fully_controlled
+from single_cnot import fully_controlled_to_single_cnot
+from circuit import Circuit
+from gates import SingleQubitGate, CNOTGate
 
 import numpy as np
 
@@ -9,12 +11,15 @@ def compile_unitary(U):
     """
     Takes a unitary and returns a circuit - i.e. a list of CNOTs and single qubit gates.
     """
+
+    # perform two level decomposition
     two_level_unitaries = two_level_decomp(U)
 
     assert(np.allclose(mat_mul(two_level_unitaries), U))
 
     controlled_ops = []
 
+    # decompose each two-level unitary into fully controlled operations
     for t in two_level_unitaries:
         controlled_ops += two_level_to_fully_controlled(t)
 
@@ -22,6 +27,7 @@ def compile_unitary(U):
 
     gates = []
 
+    # decompose each fully controlled operations into single qubit and CNOT gates
     for c in controlled_ops:
         gates += fully_controlled_to_single_cnot(c)
 
@@ -54,8 +60,7 @@ if __name__ == '__main__':
 
     np.random.seed(123)
 
-    n=3
-    for _ in range(5):
+    for n in [2,3]:
         print('-------------------------')
         print('number of qubits: ' + str(n))
 

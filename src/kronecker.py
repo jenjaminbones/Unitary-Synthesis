@@ -1,9 +1,9 @@
-import numpy as np
-import math
-
 from util import *
 
 def vec(A):
+    """
+    Stacks the columns of a matrix to make a column vector.
+    """
     cols = A.shape[1]
     rows = A.shape[0]
     v = []
@@ -16,6 +16,9 @@ def vec(A):
 
 
 def inverse_vec(v, shape):
+    """
+    Converts a vector back to matrix form, given the final shape.
+    """
     rows = shape[0]
     cols = shape[1]
     res = []
@@ -28,6 +31,12 @@ def inverse_vec(v, shape):
 
 
 def rearrange(A, n1, m1, n2, m2):
+    """
+    Rearrange a matrix A in order to do kronecker approximation.
+
+    For finding A=B*C, then B is n1 x m1, C is n2 x m2 and A is n1*n2 x m1*m2.
+
+    """
     r = []
     for i in range(n1):
         a = []
@@ -44,6 +53,7 @@ def nearest_kron_product(A, n1, m1, n2, m2):
     """
     Decomposes A = B x C where B is n1*m1, C is n2*m2
     """
+
     rearr_A = rearrange(A.astype(np.complex), n1, m1, n2, m2)
     u, s, v = np.linalg.svd(rearr_A)
 
@@ -62,7 +72,10 @@ def nearest_kron_product(A, n1, m1, n2, m2):
     return b, c, err
 
 
-def nearest_single_gates(A):
+def nearest_single_qubit_gates(A):
+    """
+    Recursively applies NKP to approximate a 2^n x 2^n unitary into n 2 x 2 unitary matrices.
+    """
     B = A.copy()
     rows, cols = A.shape
     assert (rows == cols)
@@ -80,6 +93,9 @@ def nearest_single_gates(A):
 
 
 def mult_kron_prod(gate_list):
+    """
+    Takes the kronecker product of all matrices in the list.
+    """
     res = gate_list[0]
     for g in gate_list[1:]:
         res = np.kron(res,g)
@@ -87,6 +103,13 @@ def mult_kron_prod(gate_list):
 
 
 def find_min_separable(mat):
+    """
+     Finds the best single kronecker decomposition of mat = b*c that gives the lowest error (i.e. it checks all possible
+     ways to decompose and returns the one with smallest error). This can be thought of as finding
+    the best 'cut' - i.e. where best to place the kronecker product operation.
+
+    returns if separable (bool), best index (int), b and c (matrices), error (float)
+    """
     dim = mat.shape[0]
     n = math.log(dim, 2)
     assert(int(n) == n)

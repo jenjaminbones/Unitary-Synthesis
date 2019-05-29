@@ -1,11 +1,11 @@
-import numpy as np
-import scipy as sp
-from gates import *
-from fully_controlled import *
-from two_level import *
-from circuit import *
 from util import *
+from fully_controlled import is_fully_controlled_op, fully_controlled_U
+from circuit import Circuit
 
+from gates import X, SingleQubitGate, CNOTGate, ControlledUGate, \
+    extend, gate_decomposition, z_rotation, phase, y_rotation
+
+import scipy as sp
 
 def controlledU_to_single_cnot(mat):
 

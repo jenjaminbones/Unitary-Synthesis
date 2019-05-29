@@ -10,7 +10,17 @@ def is_unitary(mat):
 
 
 def random_hermitian(dim, spread=1):
+    """
+    :param dim: dimension of hermitian
+    :param spread: random entries are generated between -spread and +spread
+    :return:
+    """
     h = np.zeros((dim, dim), dtype=np.complex)
+
+    # Recall that a hermitian matrix is equal to it's conjugate transpose. This fixes the diagonal elements to be real
+    # and H_ij = H*_ji means we only need to specify elements on and above the diagonal.
+    # Hence a complex hermitian matrix of dimension n has (n^2 - n)/2  complex parameters (entries above diagonal)
+    # and n real parameters (the diagonal). So there are (n^2 - n)/2 * 2 + n = n^2 real parameters.
 
     vals = list(np.random.uniform(-spread, spread, dim ** 2))
     for i in range(dim):
@@ -21,16 +31,25 @@ def random_hermitian(dim, spread=1):
             h[j][k] = vals.pop(0) + 1j * vals.pop(0)
             h[k][j] = np.conj(h[j][k])
 
+    assert(np.allclose(h, np.conj(h.transpose())))
+
     return h
 
 
 def random_unitary(dim, spread=1):
-    u = expm(1j*random_hermitian(dim,spread=spread))
+
+    # Recall any unitary can be expressed as e^iH for some hermitian matrix H.
+
+    u = expm(1j*random_hermitian(dim, spread=spread))
     assert(is_unitary(u))
     return u
 
 
 def mat_mul(mat_list):
+    """
+    Takes a list of matrices and multiplies them all together.
+    """
+
     res = np.eye(mat_list[0].shape[0])
     for m in mat_list:
         res = res @ m
@@ -38,12 +57,20 @@ def mat_mul(mat_list):
 
 
 def pad(mat):
+    """
+    Inserts an identity row and column at the first index.
+    """
+
     res = np.eye(mat.shape[0]+1).astype(np.complex)
     res[1:,1:] = mat.astype(np.complex)
     return res
 
 
 def get_dim_qubits(mat, qubits=True):
+    """
+    Gets the dimension and corresponding number of qubits from a matrix.
+    """
+
     dim = mat.shape[0]
     if qubits:
         num_qubits = math.log(dim, 2)
@@ -53,15 +80,6 @@ def get_dim_qubits(mat, qubits=True):
     else:
         return dim,
 
-
-# def prop_submat(mat):
-#     dim = mat.shape[0]
-#     n = math.log(dim, 2)
-#     assert(int(n) == n)
-#
-#     a = mat[:int(dim/2),:int(dim/2)]
-#
-#     return a
 
 def one_hot(length, index):
     return [1 if i == index else 0 for i in range(length)]
@@ -76,6 +94,9 @@ def binlist_to_int(l):
 
 
 def gray_code(blist_1, blist_2):
+    """
+    Returns a list of binary strings connecting blist_1 and blist_2.
+    """
 
     b1_len = len(blist_1)
     b2_len = len(blist_2)
@@ -93,7 +114,7 @@ def gray_code(blist_1, blist_2):
     return steps
 
 
-def hamming_dist(b1,b2):
+def hamming_dist(b1, b2):
     return len(np.nonzero(add_bin_lists(b1,b2))[0])
 
 

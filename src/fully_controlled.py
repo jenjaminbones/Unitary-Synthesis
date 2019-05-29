@@ -1,9 +1,6 @@
-import numpy as np
-
-from two_level import *
 from util import *
-
-X = np.array([[0,1],[1,0]])
+from gates import X
+from two_level import is_two_level, make_two_level
 
 
 def two_level_to_fully_controlled(mat):
